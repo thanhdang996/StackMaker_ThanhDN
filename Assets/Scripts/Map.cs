@@ -5,13 +5,16 @@ using UnityEngine;
 
 public class Map : MonoBehaviour
 {
-    [SerializeField] private int row;
-    [SerializeField] private int column;
-    private int[,] map;
+    [SerializeField] int row;
+    [SerializeField] int column;
+    int[,] map;
     public int[,] MapMatrix => map;
 
-    [SerializeField] private Brick brickPrefab;
-    [SerializeField] private PlayerMovement player;
+    Brick[,] brickObjects;
+    public Brick[,] BrickObjects => brickObjects;
+
+    [SerializeField] Brick brickPrefab;
+    [SerializeField] PlayerMovement player;
 
     private void Start()
     {
@@ -25,9 +28,10 @@ public class Map : MonoBehaviour
     {
         string textMap = Resources.Load<TextAsset>("Maps/Map1").text;
         string[] splitRow = textMap.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-        row = splitRow.Length;
-        column = splitRow[0].Split(",").Length;
+        row = splitRow.Length; //24
+        column = splitRow[0].Split(",").Length; //13
         map = new int[row, column];
+        brickObjects = new Brick[row, column];
 
         for (int i = 0; i < row; i++)
         {
@@ -42,38 +46,42 @@ public class Map : MonoBehaviour
 
     private void SetBrickToMatrixArray()
     {
-        for (int y = 0; y < row; y++)
+        for (int i = 0; i < row; i++)
         {
-            for (int x = 0; x < column; x++)
+            for (int j = 0; j < column; j++)
             {
-                Vector3 position = new Vector3(x, 0, -y);
-
+                Vector3 position = new Vector3(i, 0, j);
                 Brick brick;
-                if (map[y, x] == 0)
+                if (map[i, j] == 0)
                 {
                     brick = Instantiate(brickPrefab, position, Quaternion.identity, transform);
+                    brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.Void;
                 }
-                if (map[y, x] == 1)
+                if (map[i, j] == 1)
                 {
                     brick = Instantiate(brickPrefab, position, Quaternion.identity, transform);
+                    brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.CanEat;
                 }
-                else if (map[y, x] == 2)
+                else if (map[i, j] == 2)
                 {
                     brick = Instantiate(brickPrefab, position, Quaternion.identity, transform);
+                    brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.MinusBrick;
                 }
-                else if (map[y, x] == 3)
+                else if (map[i, j] == 3)
                 {
                     brick = Instantiate(brickPrefab, position, Quaternion.identity, transform);
+                    brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.StartPos;
                     Vector3 posBrick = brick.transform.position;
                     player.transform.position = new Vector3(posBrick.x, 0.5f, posBrick.z);
                 }
-                else if (map[y, x] == 4)
+                else if (map[i, j] == 4)
                 {
                     brick = Instantiate(brickPrefab, position, Quaternion.identity, transform);
+                    brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.EndPos;
                 }
             }
