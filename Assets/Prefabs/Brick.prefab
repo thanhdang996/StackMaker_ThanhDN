@@ -101,4 +101,5 @@ MonoBehaviour:
   yellowMaterial: {fileID: 2100000, guid: 714ec1cf9c01e184386cf4d85589ce78, type: 2}
   startMaterialBrick: {fileID: 2100000, guid: 3c533c4c89f7b5f40abcf2874f2fa1a6, type: 2}
   endMaterialBrick: {fileID: 2100000, guid: b2bff7652b88f6f46874dff6ce907558, type: 2}
+  brownMaterialBrick: {fileID: 2100000, guid: 465c1b48c22fd0f4893ad09861512ec8, type: 2}
   brickType: 0
