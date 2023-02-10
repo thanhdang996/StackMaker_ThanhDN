@@ -9,13 +9,16 @@ public class Brick : MonoBehaviour
     [SerializeField] private Material yellowMaterial;
     [SerializeField] private Material startMaterialBrick;
     [SerializeField] private Material endMaterialBrick;
+    [SerializeField] private Material brownMaterialBrick;
     public enum BrickType
     {
         Void,
         CanEat,
         MinusBrick,
         StartPos,
-        EndPos
+        EndPos, 
+        Eaten,
+        CanNotEat,
     }
     public BrickType brickType;
 
@@ -47,6 +50,10 @@ public class Brick : MonoBehaviour
         {
             GetComponent<MeshRenderer>().material = endMaterialBrick;
         }
+    }
 
+    public void SetColorBrickCanNotEat()
+    {
+        GetComponent<MeshRenderer>().material = brownMaterialBrick;
     }
 }

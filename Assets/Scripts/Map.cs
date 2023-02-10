@@ -16,19 +16,20 @@ public class Map : MonoBehaviour
     [SerializeField] Brick brickPrefab;
     [SerializeField] PlayerMovement player;
 
-    private void Start()
-    {
-        Application.targetFrameRate = 30;
 
-        AddTextToMatrixArray();
+
+    public void GenerateNewMap(int level)
+    {
+        DestroyAllBrick();
+        AddTextToMatrixArray(level);
         SetBrickToMatrixArray();
     }
 
-    private void AddTextToMatrixArray()
+    private void AddTextToMatrixArray(int level)
     {
-        string textMap = Resources.Load<TextAsset>("Maps/Map1").text;
+        string textMap = Resources.Load<TextAsset>($"Maps/Map{level}").text;
         string[] splitRow = textMap.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
-        row = splitRow.Length; //24
+        row = splitRow.Length; //25
         column = splitRow[0].Split(",").Length; //13
         map = new int[row, column];
         brickObjects = new Brick[row, column];
@@ -76,7 +77,7 @@ public class Map : MonoBehaviour
                     brickObjects[i, j] = brick;
                     brick.brickType = Brick.BrickType.StartPos;
                     Vector3 posBrick = brick.transform.position;
-                    player.transform.position = new Vector3(posBrick.x, 0.5f, posBrick.z);
+                    player.transform.position = new Vector3(posBrick.x, 0, posBrick.z);
                 }
                 else if (map[i, j] == 4)
                 {
@@ -85,6 +86,15 @@ public class Map : MonoBehaviour
                     brick.brickType = Brick.BrickType.EndPos;
                 }
             }
+        }
+    }
+
+    public void DestroyAllBrick()
+    {
+        Brick[] brickRemains = transform.GetComponentsInChildren<Brick>();
+        foreach (var brickChild in brickRemains)
+        {
+            Destroy(brickChild.gameObject);
         }
     }
 }
