@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Brick currentBrick;
     [SerializeField] int ownBrick;
+    public int OwnBrick => ownBrick;
     [SerializeField] Stack<Brick> listOwnBrick = new Stack<Brick>();
     [SerializeField] float offsetBrick = 0.2f;
 
@@ -26,16 +27,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        desVec = transform.position;
+        OnInit();
     }
 
-    private void OnInit()
+    public void OnInit()
     {
         if (GetComponent<Rigidbody>() != null)
         {
             Destroy(GetComponent<Rigidbody>());
         }
         enabled = true;
+        isTouch = false;
         desVec = transform.position;
         direction = Vector3.zero;
         isMoving = false;
@@ -61,10 +63,18 @@ public class PlayerMovement : MonoBehaviour
         }
 
         desVec = CheckValidMove(direction); // check liên tục
-
         if (desVec.Equals(transform.position) || direction == Vector3.zero) //neu điểm đến trùng với vị trí hiện tại player thì setMoving = false;
         {
             isMoving = false;
+            if(speed > 50)
+            {
+                // fix bug when speed too much
+                Brick brick = GetBrickInPlayerCurrentPos();
+                if(brick.brickType == Brick.BrickType.EndPos)
+                {
+                    isMoving = true;
+                }
+            }
         }
         else
         {
@@ -74,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
         if (isMoving)
         {
             Brick brick = GetBrickInPlayerCurrentPos(); // brick này đã Instantiate ở map, chỉ lấy vị trị hiện tại rồi gán vào biến brick
+
             if (currentBrick != brick)
             {
                 currentBrick = brick;
@@ -92,6 +103,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 dir = (endPoint - startPoint).normalized; // đã xác định đc hướng
         float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         angle = (angle + 360) % 360;
+
         if ((angle >= 315 && angle < 360) || (angle >= 0 && angle < 45))
         {
             direction = Vector3.right;
@@ -218,7 +230,8 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                print("Het gach");
+                ownBrick++;
+                GameManager.Instance.IsOutOfBricks = true;
                 enabled = false;
                 Invoke(nameof(DelayLoadNewGame), 3f);
             }
@@ -232,7 +245,6 @@ public class PlayerMovement : MonoBehaviour
                 Destroy(brickChild.gameObject);
             }
             transform.position = new Vector3(brick.transform.position.x, transform.position.y, brick.transform.position.z);
-
             gameObject.AddComponent<Rigidbody>();
             enabled = false;
             Invoke(nameof(DelayLoadNewMap), 3f);
@@ -250,8 +262,8 @@ public class PlayerMovement : MonoBehaviour
         currentLevel++;
         if (currentLevel > GameManager.Instance.MaxLevel)
         {
-            print("U Win");
-            SceneManager.LoadScene(1);
+            enabled = false;
+            GameManager.Instance.IsWinning = true;
             return;
         }
         else
